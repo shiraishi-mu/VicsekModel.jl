@@ -29,7 +29,7 @@ is_Alg(::VicsekModelAlgorithm) = ForLoop()
 is_Alg(::KDTree) = KDTree()
 is_Alg(::ForLoop) = ForLoop()
 
-update_with_anim(i) = update_with_anim(VicsekModelAlgorithm(), i)
+update_with_anim(i) = update_with_anim(VicsekModelAlgorithm(), i, var, p)
 
 function update_with_anim(::KDTree, i::Ti, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
     @unpack pos, vel, θ = var
@@ -69,3 +69,4 @@ function update_with_anim(::KDTree, i::Ti, var::VicsekModelVariables{Tf}, p::Vic
 end
 
 end
+
