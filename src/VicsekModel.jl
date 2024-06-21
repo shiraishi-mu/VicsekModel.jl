@@ -48,8 +48,8 @@ function update_with_anim(::KDTree, i::Ti, var::VicsekModelVariables{Tf}, p::Vic
         θ[j] = S[j] + η * random(Uniform(-π, π))
         vel[j, 1] = cos(θ[j])
         vel[j, 2] = sin(θ[j])
-        pos[j, 1] += v₀ * cos(θ[j])
-        pos[j, 2] += v₀ * sin(θ[j])
+        pos[j, 1] += v₀ * vel[j, 1]
+        pos[j, 2] += v₀ * vel[j, 2]
     end
 
     @inbounds for j in 1:N
