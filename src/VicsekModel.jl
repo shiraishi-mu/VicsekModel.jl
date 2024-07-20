@@ -14,25 +14,16 @@ module VicsekModel
     is_Alg(::algForLoop) = algForLoop()
 
     """
-    Parameters
-    ---
-    L: Length of the square box
-
-    ρ: Density of particles
-
-    N: Number of particles
-
-    r₀: Interaction radius
-
-    Δt: Time step
-
-    factor: Factor to determine the initial velocity
-
-    v₀: Initial velocity
-
-    η: Noise strength
-
-    alg: Algorithm to update the position and velocity
+    # Fields
+    - L: Length of the square box
+    - ρ: Density of particles
+    - N: Number of particles
+    - r₀: Interaction radius
+    - Δt: Time step
+    - factor: Factor to determine the initial velocity
+    - v₀: Initial velocity
+    - η: Noise strength
+    - alg: Algorithm to update the position and velocity
     """
     @kwdef struct VicsekModelParameters{Tf <: Real, Ti <: Integer}
         L::Tf = 32.0
@@ -66,10 +57,10 @@ module VicsekModel
     """
     Variables of the Vicsek model
 
-    pos: Position of particles
-    vel: Velocity of particles
-    θ: Angle of particles
-    S: Complex number to calculate the average angle of neighbors
+    - pos: Position of particles
+    - vel: Velocity of particles
+    - θ: Angle of particles
+    - S: Complex number to calculate the average angle of neighbors
     """
     struct VicsekModelVariables{Tf <: Real}
         pos::Array{Tf, 2}
@@ -81,10 +72,10 @@ module VicsekModel
     """
     Initialize the variables of the Vicsek model
 
-    pos: Random position of particles
-    vel: Random velocity of particles
-    θ: Random angle of particles
-    S: Complex number to calculate the average angle of neighbors
+    - pos: Random position of particles
+    - vel: Random velocity of particles
+    - θ: Random angle of particles
+    - S: Complex number to calculate the average angle of neighbors
     """
     function VicsekModelVariables(p::VicsekModelParameters, seed::Integer=1)
         @unpack v₀, N, L = p
@@ -114,12 +105,13 @@ module VicsekModel
     """
     Calculate the average angle of neighbors
 
-    tree: KDTree to find the neighbors
-    pos: Position of particles
-    θ: Angle of particles
-    S: Complex number to calculate the average angle of neighbors
-    r₀: Interaction radius
-    ix: Index of particles
+    # Arguments
+    - tree: KDTree to find the neighbors
+    - pos: Position of particles
+    - θ: Angle of particles
+    - S: Complex number to calculate the average angle of neighbors
+    - r₀: Interaction radius
+    - ix: Index of particles
     """
     function calculate_weights!(tree::NNTree, pos::Array{Tf, 2}, θ::Vector{Tf}, S::Vector{Complex}, r₀::Tf, ix::Base.OneTo) where Tf
         @inbounds for j in ix
@@ -133,13 +125,14 @@ module VicsekModel
     """
     Update the position and velocity of particles
 
-    pos: Position of particles
-    vel: Velocity of particles
-    θ: Angle of particles
-    S: Complex number to calculate the average angle of neighbors
-    v₀: Initial velocity
-    η: Noise strength
-    ix: Index of particles
+    # Arguments
+    - `pos`: Position of particles
+    - `vel`: Velocity of particles
+    - `θ`: Angle of particles
+    - `S`: Complex number to calculate the average angle of neighbors
+    - `v₀`: Initial velocity
+    - `η`: Noise strength
+    - `ix`: Index of particles
     """
     function update_position!(pos::Array{Tf, 2}, vel::Array{Tf, 2}, θ::Vector{Tf}, S::Vector{Complex}, v₀::Tf, η::Tf, ix::Base.OneTo) where Tf
         @inbounds for j in ix
@@ -154,9 +147,10 @@ module VicsekModel
     """
     Periodic boundary condition
 
-    pos: Position of particles
-    L: Length of the square box
-    ix: Index of particles
+    # Arguments
+    - pos: Position of particles
+    - L: Length of the square box
+    - ix: Index of particles
     """
     function periodic_boundary!(pos::Array{Tf, 2}, L::Tf, ix::Base.OneTo) where Tf
         @inbounds for j in ix
@@ -169,8 +163,9 @@ module VicsekModel
     """
     Update the position and velocity of particles using KDTree
 
-    var: Variables of the Vicsek model
-    p: Parameters of the Vicsek model
+    # Arguments
+    - var: Variables of the Vicsek model
+    - p: Parameters of the Vicsek model
     """
     function update!(::algKDTree, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
         @unpack pos, vel, θ, S = var
@@ -189,9 +184,10 @@ module VicsekModel
     """
     Update the position and velocity of particles with animation
 
-    t: Time step
-    var: Variables of the Vicsek model
-    p: Parameters of the Vicsek model
+    # Arguments
+    - t: Time step
+    - var: Variables of the Vicsek model
+    - p: Parameters of the Vicsek model
     """
     function update_with_anim(t::Ti, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
         @unpack pos, vel, θ = var
@@ -207,7 +203,8 @@ module VicsekModel
     """
     Vicsek model with animation
 
-    Tmax: Maximum time step
+    # Arguments
+    - `Tmax`: Maximum time step
     """
     function vicsekmodel_with_anim(Tmax)
         p = VicsekModelParameters{Float64, Int64}(η=0.3, ρ=0.4)
