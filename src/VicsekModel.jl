@@ -16,7 +16,7 @@ module VicsekModel
     @kwdef struct VicsekModelParameters{Tf <: Real, Ti <: Integer}
         L::Tf = 32.0
         ρ::Tf = 3.0
-        N::Ti = Int(ρ * L^2)
+        N::Ti = Int(floor(ρ * L^2))
 
         r₀::Tf = 1.0
         Δt::Tf = 1.0
@@ -63,7 +63,7 @@ module VicsekModel
         println("強度 (S): ", var.S)
     end
 
-    update_with_anim(i, var, p) = update_with_anim(is_Alg(p.alg), i, var, p)
+    update!(var, p) = update!(is_Alg(p.alg), var, p)
 
     function calculate_weights!(tree::NNTree, pos::Array{Tf, 2}, θ::Vector{Tf}, S::Vector{Complex}, r₀::Tf, ix) where Tf
         @inbounds for j in ix
@@ -76,7 +76,7 @@ module VicsekModel
 
     function update_position!(pos::Array{Tf, 2}, vel::Array{Tf, 2}, θ::Vector{Tf}, S::Vector{Complex}, v₀::Tf, η::Tf, ix) where Tf
         @inbounds for j in ix
-            θ[j] = S[j] + η * Random.rand(Uniform(-π, π))
+            θ[j] = deg2rad(angle(S[j])) + η * Random.rand(Uniform(-π, π))
             vel[j, 1] = cos(θ[j])
             vel[j, 2] = sin(θ[j])
             pos[j, 1] += v₀ * vel[j, 1]
@@ -92,7 +92,7 @@ module VicsekModel
 
     end
 
-    function update_with_anim(::algKDTree, i::Ti, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
+    function update!(::algKDTree, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
         @unpack pos, vel, θ, S = var
         @unpack L, ρ, N, r₀, Δt, factor, v₀, η = p
         ix = axes(pos, 1)
@@ -104,14 +104,21 @@ module VicsekModel
         update_position!(pos, vel, θ, S, v₀, η, ix)
 
         periodic_boundary!(pos, L, ix)
+    end
 
-        fig = plot(size=(600, 600), xlim=(0, L), ylim=(0, L))
+    function update_with_anim(t::Ti, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
+        @unpack pos, vel, θ = var
+        @unpack L = p
+
+        update!(var, p)
+
+        fig = plot(size=(600, 600), xlim=(0, p.L), ylim=(0, p.L))
         quiver!(fig, pos[:,1], pos[:,2], quiver=(vel[:,1], vel[:,2]), framestyle=:box, line_z=repeat(θ, inner=4), c=:viridis)
         return fig
     end
 
     function vicsekmodel_with_anim(Tmax)
-        p = VicsekModelParameters{Float64, Int64}()
+        p = VicsekModelParameters{Float64, Int64}(η=0.3, ρ=0.4)
         println(p)
         var = VicsekModelVariables(p)
 
