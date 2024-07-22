@@ -61,7 +61,7 @@ gif(anim, "animation.gif", fps = 15)
 using VicsekModel
 
 Tmax = 1000
-$\rho$ = 0.5
+\[\rho\] = 0.5
 $\eta$ = 0.5
 $\nu$ = 0.03
 
