@@ -10,6 +10,14 @@ Algorithm is based on [the python code by Dr. Frances Turci](https://francescotu
 
 ## Installation
 
+This package is not registered in the General registry.
+
+You have to download this package from GitHub.
+
+First, you have to move your directory to the package directory.
+
+Then, you can run this model by the following command.
+
 ```julia
 julia> ]
 pkg> add VicsekModel
