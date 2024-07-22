@@ -13,6 +13,8 @@ module VicsekModel
     is_Alg(::algKDTree) = algKDTree()
     is_Alg(::algForLoop) = algForLoop()
 
+    export VicsekModelParameters, VicsekModelVariables, VicsekModelAlgorithm, algKDTree, algForLoop, update!, update_with_anim, vicsekmodel_with_anim
+
     """
     # Fields
     - `L`: Length of the square box
@@ -103,7 +105,7 @@ module VicsekModel
     update!(var, p) = update!(is_Alg(p.alg), var, p)
 
     """
-    Calculate the average angle of neighbors
+    Calculate the average angle of neighbors with KDTree
 
     # Arguments
     - `tree`: KDTree to find the neighbors
@@ -121,6 +123,28 @@ module VicsekModel
             end
         end
     end
+
+    """
+    Calculate the average angle of neighbors
+
+    # Arguments
+    - `pos`: Position of particles
+    - `θ`: Angle of particles
+    - `S`: Complex number to calculate the average angle of neighbors
+    - `r₀`: Interaction radius
+    - `ix`: Index of particles
+    """
+    function calculate_weights!(pos::Array{Tf, 2}, θ::Vector{Tf}, S::Vector{Complex}, r₀::Tf, ix::Base.OneTo) where Tf
+        @inbounds for j in ix
+            @inbounds for k in ix[j+1:end]
+                r = sqrt((pos[j,1]-pos[k,1])^2 + (pos[j,2]-pos[k,2])^2)
+                if r < r₀
+                    S[j] += cis(θ[k] * im)
+                end
+            end
+        end
+    end
+   
 
     """
     Update the position and velocity of particles
@@ -175,6 +199,25 @@ module VicsekModel
         tree = KDTree(transpose(pos))
 
         calculate_weights!(tree, pos, θ, S, r₀, ix)
+
+        update_position!(pos, vel, θ, S, v₀, η, ix)
+
+        periodic_boundary!(pos, L, ix)
+    end
+
+    """
+    Update the position and velocity of particles using a simple for-loop method
+
+    # Arguments
+    - `var`: Variables of the Vicsek model
+    - `p`: Parameters of the Vicsek model
+    """
+    function update!(::algForLoop, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
+        @unpack pos, vel, θ, S = var
+        @unpack L, ρ, N, r₀, Δt, factor, v₀, η = p
+        ix = axes(pos, 1)
+
+        calculate_weights!(pos, θ, S, r₀, ix)
 
         update_position!(pos, vel, θ, S, v₀, η, ix)
 
