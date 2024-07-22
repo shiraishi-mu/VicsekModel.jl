@@ -13,7 +13,7 @@ module VicsekModel
     is_Alg(::algKDTree) = algKDTree()
     is_Alg(::algForLoop) = algForLoop()
 
-    export VicsekModelParameters, VicsekModelVariables, VicsekModelAlgorithm, algKDTree, algForLoop, update!, update_with_anim, vicsekmodel_with_anim
+    export VicsekModelParameters, VicsekModelVariables, VicsekModelAlgorithm, algKDTree, algForLoop, update!, update_with_anim, vicsekmodel, vicsekmodel_with_anim
 
     """
     # Fields
@@ -250,7 +250,7 @@ module VicsekModel
     - `var`: Variables of the Vicsek model
     - `p``: Parameters of the Vicsek model
     """
-    function update_with_anim(t::Ti, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
+    function update_with_anim!(t::Ti, var::VicsekModelVariables{Tf}, p::VicsekModelParameters{Tf, Ti}) where {Tf, Ti}
         @unpack pos, vel, θ = var
         @unpack L = p
 
@@ -262,18 +262,35 @@ module VicsekModel
     end
 
     """
+    Basic simulation of Vicsek model
+
+    # Arguments
+    - `Tmax`: Maximum time step
+    """
+    function vicsekmodel(Tmax::Integer)
+        p = VicsekModelParameters(η=0.3, ρ=0.4)
+        println(p)
+        var = VicsekModelVariables(p)
+
+        for t in 1:Tmax
+            update!(var, p)
+        end
+        return var
+    end
+
+    """
     Vicsek model with animation
 
     # Arguments
     - `Tmax`: Maximum time step
     """
     function vicsekmodel_with_anim(Tmax::Integer)
-        p = VicsekModelParameters{Float64, Int64}(η=0.3, ρ=0.4)
+        p = VicsekModelParameters(η=0.3, ρ=0.4)
         println(p)
         var = VicsekModelVariables(p)
 
         anim = @animate for t in 1:Tmax
-            update_with_anim(t, var, p)
+            update_with_anim!(t, var, p)
         end
         gif(anim, "animation.gif", fps = 15)
     end
