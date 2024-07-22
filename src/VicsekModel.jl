@@ -79,6 +79,24 @@ module VicsekModel
     - `θ`: Random angle of particles
     - `S`: Complex number to calculate the average angle of neighbors
     """
+    function VicsekModelVariables(p::VicsekModelParameters)
+        @unpack v₀, N, L = p
+        Random.seed!(seed)
+        pos = rand(Uniform(0, L), N, 2)
+        θ = rand(Uniform(-π, π), N)
+        vel = hcat(v₀ .* cos.(θ), v₀ .*sin.(θ))
+        S = zeros(Complex, N)
+        return VicsekModelVariables(pos, vel, θ, S)
+    end
+
+    """
+    Initialize the variables of the Vicsek model with a seed number
+
+    - `pos`: Random position of particles
+    - `vel`: Random velocity of particles
+    - `θ`: Random angle of particles
+    - `S`: Complex number to calculate the average angle of neighbors
+    """
     function VicsekModelVariables(p::VicsekModelParameters, seed::Integer=1)
         @unpack v₀, N, L = p
         Random.seed!(seed)
@@ -249,7 +267,7 @@ module VicsekModel
     # Arguments
     - `Tmax`: Maximum time step
     """
-    function vicsekmodel_with_anim(Tmax)
+    function vicsekmodel_with_anim(Tmax::Integer)
         p = VicsekModelParameters{Float64, Int64}(η=0.3, ρ=0.4)
         println(p)
         var = VicsekModelVariables(p)
