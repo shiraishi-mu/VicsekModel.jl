@@ -245,7 +245,7 @@ module VicsekModel
         update!(var, p)
 
         fig = plot(size=(600, 600), xlim=(0, p.L), ylim=(0, p.L))
-        quiver!(fig, pos[:,1], pos[:,2], quiver=(vel[:,1], vel[:,2]), framestyle=:box, line_z=repeat(θ, inner=4), c=:viridis)
+        quiver!(fig, pos[:,1], pos[:,2], quiver=(vel[:,1], vel[:,2]), framestyle=:box, line_z=repeat(θ, inner=4), c=:hsv)
         return fig
     end
 
