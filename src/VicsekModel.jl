@@ -121,6 +121,7 @@ module VicsekModel
     """
     function calculate_weights!(tree::NNTree, pos::Array{Tf, 2}, θ::Vector{Tf}, S::Vector{Complex}, r₀::Tf, ix::Base.OneTo) where Tf
         @inbounds for j in ix
+            S[j] = 0.0
             neighbors = inrange(tree, pos[j,:], r₀, true)
             @inbounds for k in neighbors
                 S[j] += cis(θ[k] * im)
@@ -140,6 +141,7 @@ module VicsekModel
     """
     function calculate_weights!(pos::Array{Tf, 2}, θ::Vector{Tf}, S::Vector{Complex}, r₀::Tf, ix::Base.OneTo) where Tf
         @inbounds for j in ix
+            S[j] = 0.0
             @inbounds for k in ix[j+1:end]
                 r = sqrt((pos[j,1]-pos[k,1])^2 + (pos[j,2]-pos[k,2])^2)
                 if r < r₀
