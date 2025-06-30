@@ -124,7 +124,7 @@ module VicsekModel
             S[j] = 0.0
             neighbors = inrange(tree, pos[j,:], r₀, true)
             @inbounds for k in neighbors
-                S[j] += cis(θ[k] * im)
+                S[j] += cis(θ[k])
             end
         end
     end
@@ -145,7 +145,7 @@ module VicsekModel
             @inbounds for k in ix[j+1:end]
                 r = sqrt((pos[j,1]-pos[k,1])^2 + (pos[j,2]-pos[k,2])^2)
                 if r < r₀
-                    S[j] += cis(θ[k] * im)
+                    S[j] += cis(θ[k])
                 end
             end
         end
