@@ -59,6 +59,7 @@ module VicsekModel
     """
     Variables of the Vicsek model
 
+    # Arguments
     - `pos`: Position of particles
     - `vel`: Velocity of particles
     - `θ`: Angle of particles
@@ -74,32 +75,17 @@ module VicsekModel
     """
     Initialize the variables of the Vicsek model
 
-    - `pos`: Random position of particles
-    - `vel`: Random velocity of particles
-    - `θ`: Random angle of particles
-    - `S`: Complex number to calculate the average angle of neighbors
+    # Arguments
+    - `p`: Variables of the Vicsek model
+    - `seed`: keyword variable used as seed for random generator
     """
-    function VicsekModelVariables(p::VicsekModelParameters)
+    function VicsekModelVariables(p::VicsekModelParameters; seed=nothing)
         @unpack v₀, N, L = p
-        Random.seed!(seed)
-        pos = rand(Uniform(0, L), N, 2)
-        θ = rand(Uniform(-π, π), N)
-        vel = hcat(v₀ .* cos.(θ), v₀ .*sin.(θ))
-        S = zeros(Complex, N)
-        return VicsekModelVariables(pos, vel, θ, S)
-    end
-
-    """
-    Initialize the variables of the Vicsek model with a seed number
-
-    - `pos`: Random position of particles
-    - `vel`: Random velocity of particles
-    - `θ`: Random angle of particles
-    - `S`: Complex number to calculate the average angle of neighbors
-    """
-    function VicsekModelVariables(p::VicsekModelParameters, seed::Integer=1)
-        @unpack v₀, N, L = p
-        Random.seed!(seed)
+        if isnothing(seed)
+            Random.seed!()
+        else
+            Random.seed!(seed)
+        end
         pos = rand(Uniform(0, L), N, 2)
         θ = rand(Uniform(-π, π), N)
         vel = hcat(v₀ .* cos.(θ), v₀ .*sin.(θ))
